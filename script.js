@@ -38,7 +38,6 @@ function generatePassword() {
   pasText.className = 'show';
   pasText.select();
   document.execCommand('copy');
-  pasText.className = 'hide';
 
 }
 
