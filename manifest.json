@@ -1,0 +1,11 @@
+{
+  "manifest_version": 2,
+
+  "name": "PASS GENERATE COPY PASTE",
+  "description": "",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}

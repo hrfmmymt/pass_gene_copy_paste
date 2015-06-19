@@ -1,0 +1,69 @@
+html, body, div, header, h1, section, label, input, ul, li, footer {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 400px;
+  font-size: 14px;
+}
+
+.wrapper {
+  padding: 2%;
+}
+
+h1 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 4%;
+}
+
+section {
+  padding-top: 4%;
+  padding-bottom: 10%;
+}
+
+li {
+  list-style-type: none;
+  padding-top: 2%;
+}
+
+.input.length {
+  font-size: 14px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid #357ebd;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #428bca;
+}
+
+.btn:hover {
+  background-color: #2d6ca2;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: inline;
+}
