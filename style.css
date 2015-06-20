@@ -64,7 +64,7 @@ li {
   display: none;
 }
 
-.show {
+textarea.show {
   resize: none;
   display: block;
   width: 100%;
@@ -75,9 +75,43 @@ li {
   margin-bottom: 6%;
   padding-top: 2%;
   padding-bottom: 2%;
+  position: relative;
 }
 
 .show:focus,
 .btn:focus {
   outline: none;
+}
+
+.tooltip {
+  position: absolute;
+  background: #5cb85c;
+  color: #fff;
+  top: 140px;
+  left: 20px;
+  -webkit-animation: spring 0.3s ease-in-out 1;
+  width: 200px;
+  text-align: center;
+  padding: 2%;
+  font-size: 18px;
+}
+
+@-webkit-keyframes spring {
+  0% {bottom: 75px; opacity:0; -webkit-transform: scale(0,0);}
+  40% {top: 120px; opacity:1; -webkit-transform: scale(1.15,1.15);}
+  60% {top: 140px; opacity:1; -webkit-transform: scale(1,1);}
+  80% {top: 145px; opacity:1; -webkit-transform: scale(1.05,1.05);}
+  100% {top: 140px; opacity:1; -webkit-transform: scale(1,1);}
+}
+
+.tooltip:after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-top: 8px solid #5cb85c;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  position: absolute;
+  left: 100px;
+  bottom: -8px;
 }

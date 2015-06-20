@@ -36,8 +36,15 @@ function generatePassword() {
   var pasText = document.querySelector('#pasText');
   pasText.value = password;
   pasText.className = 'show';
+
   pasText.select();
   document.execCommand('copy');
+
+  var copied = document.querySelector('#copied');
+  copied.style.display = 'block';
+  setTimeout(function() {
+    copied.style.display = 'none';
+  }, 2000);
 
 }
 

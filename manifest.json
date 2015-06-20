@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
 
-  "name": "PASS GENERATE COPY PASTE",
-  "description": "",
-  "version": "1.0",
+  "name": "PW GENERATE AND COPY",
+  "description": "It generates a password that you click the button, and copy it to the clipboard.",
+  "version": "1.1",
 
   "icons": {
     "16": "16x16.png",
