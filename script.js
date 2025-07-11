@@ -37,15 +37,15 @@ function generatePassword() {
   pasText.value = password;
   pasText.className = 'show';
 
-  pasText.select();
-  document.execCommand('copy');
-
-  var copied = document.querySelector('#copied');
-  copied.style.display = 'block';
-  setTimeout(function() {
-    copied.style.display = 'none';
-  }, 2000);
-
+  navigator.clipboard.writeText(password).then(function() {
+    var copied = document.querySelector('#copied');
+    copied.style.display = 'block';
+    setTimeout(function() {
+      copied.style.display = 'none';
+    }, 2000);
+  }).catch(function(err) {
+    console.error('Failed to copy password: ', err);
+  });
 }
 
 var el = document.querySelector('#genepass');
