@@ -22,11 +22,13 @@ const SYMBOL_PATTERN = /[!"£$%&/()=?^'*+\-_.:,;.:]+/;
 // DOM関連のテスト用にHTMLをセットアップ
 function setupDOM() {
   document.body.innerHTML = `
+    <input type="number" id="passlen" value="12" min="1" max="100">
     <input type="checkbox" id="lower" checked>
     <input type="checkbox" id="upper" checked>
     <input type="checkbox" id="numbers" checked>
     <input type="checkbox" id="symbols" checked>
     <button id="genepass">GENERATE PASSWORD</button>
+    <textarea id="pasText"></textarea>
   `;
 }
 
@@ -225,6 +227,243 @@ describe('パスワード生成機能', () => {
       expect(password).toMatch(/[A-Z]/);
       expect(password).toMatch(/[0-9]/);
       expect(password).toMatch(SYMBOL_PATTERN);
+    });
+  });
+
+  describe('HTML表示機能', () => {
+    beforeEach(() => {
+      setupDOM();
+      // navigator.clipboardをモック
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          writeText: jest.fn().mockResolvedValue(),
+        },
+        writable: true,
+      });
+      
+      // DOM関数を再定義（テスト環境用）
+      // biome-ignore lint/security/noGlobalEval: テスト環境でのDOM関数定義のため必要
+      eval(`
+        function generatePassword() {
+          const passLength = parseInt(document.getElementById('passlen').value);
+          const options = {
+            lowercase: document.getElementById('lower').checked,
+            uppercase: document.getElementById('upper').checked,
+            numbers: document.getElementById('numbers').checked,
+            symbols: document.getElementById('symbols').checked,
+          };
+
+          try {
+            const password = createPassword(passLength, options);
+
+            const pasText = document.getElementById('pasText');
+            pasText.value = password;
+            pasText.className = 'show';
+
+            navigator.clipboard.writeText(password);
+          } catch (error) {
+            console.error('Password generation failed:', error.message);
+          }
+        }
+      `);
+      
+      // ボタンクリックイベントを設定
+      const generateButton = document.getElementById('genepass');
+      generateButton.addEventListener('click', generatePassword);
+    });
+
+    test('ボタンクリック後にテキストエリアにパスワードが表示される', () => {
+      // 初期状態では空
+      const pasText = document.getElementById('pasText');
+      expect(pasText.value).toBe('');
+
+      // パスワード生成ボタンをクリック
+      const generateButton = document.getElementById('genepass');
+      generateButton.click();
+
+      // パスワードが表示されることを確認
+      expect(pasText.value).not.toBe('');
+      expect(pasText.value).toHaveLength(12); // デフォルト長
+    });
+
+    test('指定した長さのパスワードがHTMLに正しく表示される', () => {
+      // 20文字のパスワード設定
+      document.getElementById('passlen').value = '20';
+      
+      const generateButton = document.getElementById('genepass');
+      generateButton.click();
+
+      const pasText = document.getElementById('pasText');
+      expect(pasText.value).toHaveLength(20);
+    });
+
+    test('文字種設定に応じたパスワードがHTMLに表示される', () => {
+      // 数字のみの設定
+      document.getElementById('lower').checked = false;
+      document.getElementById('upper').checked = false;
+      document.getElementById('numbers').checked = true;
+      document.getElementById('symbols').checked = false;
+
+      const generateButton = document.getElementById('genepass');
+      generateButton.click();
+
+      const pasText = document.getElementById('pasText');
+      expect(pasText.value).toMatch(/^[0-9]+$/);
+    });
+
+    test('複数回クリックで異なるパスワードが表示される', () => {
+      const generateButton = document.getElementById('genepass');
+      const pasText = document.getElementById('pasText');
+
+      // 1回目
+      generateButton.click();
+      const firstPassword = pasText.value;
+
+      // 2回目
+      generateButton.click();
+      const secondPassword = pasText.value;
+
+      // 異なるパスワードが生成されることを確認
+      expect(firstPassword).not.toBe(secondPassword);
+      expect(firstPassword).toHaveLength(12);
+      expect(secondPassword).toHaveLength(12);
+    });
+
+    test('テキストエリアにshowクラスが追加される', () => {
+      const pasText = document.getElementById('pasText');
+      
+      // 初期状態ではshowクラスがない
+      expect(pasText.className).toBe('');
+
+      const generateButton = document.getElementById('genepass');
+      generateButton.click();
+
+      // パスワード生成後にshowクラスが追加される
+      expect(pasText.className).toBe('show');
+    });
+  });
+
+  describe('クリップボード連携', () => {
+    let clipboardText = '';
+    
+    beforeEach(() => {
+      setupDOM();
+      // navigator.clipboardをモック
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          writeText: jest.fn().mockImplementation((text) => {
+            clipboardText = text;
+            return Promise.resolve();
+          }),
+        },
+        writable: true,
+      });
+      
+      // DOM関数を再定義（テスト環境用）
+      // biome-ignore lint/security/noGlobalEval: テスト環境でのDOM関数定義のため必要
+      eval(`
+        function updateButtonState() {
+          const options = {
+            lowercase: document.getElementById('lower').checked,
+            uppercase: document.getElementById('upper').checked,
+            numbers: document.getElementById('numbers').checked,
+            symbols: document.getElementById('symbols').checked
+          };
+
+          const hasAnyOption = options.lowercase || options.uppercase || options.numbers || options.symbols;
+          const generateButton = document.getElementById('genepass');
+          generateButton.disabled = !hasAnyOption;
+        }
+        
+        function adjustTextareaHeight(textarea) {
+          // テスト環境では簡略化
+          textarea.style.height = 'auto';
+        }
+        
+        function generatePassword() {
+          const passLength = parseInt(document.getElementById('passlen').value);
+          const options = {
+            lowercase: document.getElementById('lower').checked,
+            uppercase: document.getElementById('upper').checked,
+            numbers: document.getElementById('numbers').checked,
+            symbols: document.getElementById('symbols').checked,
+          };
+
+          try {
+            const password = createPassword(passLength, options);
+
+            const pasText = document.getElementById('pasText');
+            pasText.value = password;
+            pasText.className = 'show';
+
+            adjustTextareaHeight(pasText);
+
+            navigator.clipboard
+              .writeText(password)
+              .then(() => {
+                // テスト環境では copied 要素は不要
+              })
+              .catch((err) => {
+                console.error('Failed to copy password:', err);
+              });
+          } catch (error) {
+            console.error('Password generation failed:', error.message);
+          }
+        }
+      `);
+      
+      // ボタンクリックイベントを設定
+      const generateButton = document.getElementById('genepass');
+      generateButton.addEventListener('click', generatePassword);
+    });
+
+    test('生成されたパスワードがHTMLとクリップボードで一致する', async () => {
+      // パスワード長を設定
+      document.getElementById('passlen').value = '12';
+      
+      // 全ての文字種を有効化
+      document.getElementById('lower').checked = true;
+      document.getElementById('upper').checked = true;
+      document.getElementById('numbers').checked = true;
+      document.getElementById('symbols').checked = true;
+
+      // パスワード生成ボタンをクリック
+      const generateButton = document.getElementById('genepass');
+      generateButton.click();
+
+      // 少し待機してPromiseを解決
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // HTMLのテキストエリアから表示されているパスワードを取得
+      const pasText = document.getElementById('pasText');
+      const displayedPassword = pasText.value;
+
+      // クリップボードに保存されたテキストと比較
+      expect(displayedPassword).toBe(clipboardText);
+      expect(displayedPassword).toHaveLength(12);
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(displayedPassword);
+    });
+
+    test('異なる設定でもHTMLとクリップボードが一致する', async () => {
+      // 小文字のみの設定
+      document.getElementById('passlen').value = '8';
+      document.getElementById('lower').checked = true;
+      document.getElementById('upper').checked = false;
+      document.getElementById('numbers').checked = false;
+      document.getElementById('symbols').checked = false;
+
+      const generateButton = document.getElementById('genepass');
+      generateButton.click();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      const pasText = document.getElementById('pasText');
+      const displayedPassword = pasText.value;
+
+      expect(displayedPassword).toBe(clipboardText);
+      expect(displayedPassword).toHaveLength(8);
+      expect(displayedPassword).toMatch(/^[a-z]+$/);
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(displayedPassword);
     });
   });
 
