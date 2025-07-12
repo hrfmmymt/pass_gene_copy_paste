@@ -4,19 +4,20 @@
 
 // テスト対象の関数をインポート
 // ブラウザコードをテストするため、jsdom環境で読み込み
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 // スクリプトファイルを読み込み
 const scriptPath = path.join(__dirname, '../src/script.js');
 const scriptContent = fs.readFileSync(scriptPath, 'utf8');
 
 // テストに必要な関数のみを実行（DOM操作部分は除外）
-const functionsOnly = scriptContent.split('if (typeof document !== \'undefined\')')[0];
+const functionsOnly = scriptContent.split("if (typeof document !== 'undefined')")[0];
+// biome-ignore lint/security/noGlobalEval: テスト環境でのコード実行のため必要
 eval(functionsOnly);
 
 // テスト用定数
-const SYMBOL_PATTERN = /[!"£$%&\/()=?\^'*+\-_.:,;.:]+/;
+const SYMBOL_PATTERN = /[!"£$%&/()=?^'*+\-_.:,;.:]+/;
 
 // DOM関連のテスト用にHTMLをセットアップ
 function setupDOM() {
@@ -65,7 +66,9 @@ describe('パスワード生成機能', () => {
 
     test('文字種が何も選択されていない場合はエラーが発生する', () => {
       const options = { lowercase: false, uppercase: false, numbers: false, symbols: false };
-      expect(() => createPassword(8, options)).toThrow('At least one character type must be selected');
+      expect(() => createPassword(8, options)).toThrow(
+        'At least one character type must be selected'
+      );
     });
 
     test('長さが1未満の場合はエラーが発生する', () => {
@@ -75,7 +78,9 @@ describe('パスワード生成機能', () => {
 
     test('長さが100を超える場合はエラーが発生する', () => {
       const options = { lowercase: true, uppercase: false, numbers: false, symbols: false };
-      expect(() => createPassword(101, options)).toThrow('Password length must be between 1 and 100');
+      expect(() => createPassword(101, options)).toThrow(
+        'Password length must be between 1 and 100'
+      );
     });
 
     test('複数回実行時は異なるパスワードが生成される', () => {
@@ -227,6 +232,7 @@ describe('パスワード生成機能', () => {
     beforeEach(() => {
       setupDOM();
       // updateButtonState関数を再定義（テスト環境用）
+      // biome-ignore lint/security/noGlobalEval: テスト環境でのDOM関数定義のため必要
       eval(`
         function updateButtonState() {
           const options = {
