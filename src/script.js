@@ -17,8 +17,8 @@ function createPassword(length, options) {
     throw new Error('At least one character type must be selected');
   }
 
-  if (length < 1 || length > 30) {
-    throw new Error('Password length must be between 1 and 30');
+  if (length < 1 || length > 100) {
+    throw new Error('Password length must be between 1 and 100');
   }
 
   let password = '';
@@ -45,6 +45,9 @@ function generatePassword() {
     const pasText = document.getElementById('pasText');
     pasText.value = password;
     pasText.className = 'show';
+    
+    // テキストエリアの高さを動的に調整
+    adjustTextareaHeight(pasText);
 
     navigator.clipboard.writeText(password)
       .then(() => {
@@ -59,6 +62,23 @@ function generatePassword() {
       });
   } catch (error) {
     console.error('Password generation failed:', error.message);
+  }
+}
+
+function adjustTextareaHeight(textarea) {
+  // 一旦高さをリセット
+  textarea.style.height = 'auto';
+  
+  // スクロール高さに基づいて高さを設定
+  textarea.style.height = textarea.scrollHeight + 'px';
+  
+  // 最大高さを制限
+  const maxHeight = 150;
+  if (textarea.scrollHeight > maxHeight) {
+    textarea.style.height = maxHeight + 'px';
+    textarea.style.overflowY = 'scroll';
+  } else {
+    textarea.style.overflowY = 'hidden';
   }
 }
 

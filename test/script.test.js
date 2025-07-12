@@ -70,12 +70,12 @@ describe('パスワード生成機能', () => {
 
     test('長さが1未満の場合はエラーが発生する', () => {
       const options = { lowercase: true, uppercase: false, numbers: false, symbols: false };
-      expect(() => createPassword(0, options)).toThrow('Password length must be between 1 and 30');
+      expect(() => createPassword(0, options)).toThrow('Password length must be between 1 and 100');
     });
 
-    test('長さが30を超える場合はエラーが発生する', () => {
+    test('長さが100を超える場合はエラーが発生する', () => {
       const options = { lowercase: true, uppercase: false, numbers: false, symbols: false };
-      expect(() => createPassword(31, options)).toThrow('Password length must be between 1 and 30');
+      expect(() => createPassword(101, options)).toThrow('Password length must be between 1 and 100');
     });
 
     test('複数回実行時は異なるパスワードが生成される', () => {
