@@ -6,9 +6,9 @@
   "version": "2.0",
 
   "icons": {
-    "16": "16x16.png",
-    "48": "48x48.png",
-    "128": "128x128.png"
+    "16": "icons/16x16.png",
+    "48": "icons/48x48.png",
+    "128": "icons/128x128.png"
   },
 
   "action": {
