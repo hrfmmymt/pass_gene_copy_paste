@@ -240,7 +240,7 @@ describe('パスワード生成機能', () => {
         },
         writable: true,
       });
-      
+
       // DOM関数を再定義（テスト環境用）
       // biome-ignore lint/security/noGlobalEval: テスト環境でのDOM関数定義のため必要
       eval(`
@@ -266,7 +266,7 @@ describe('パスワード生成機能', () => {
           }
         }
       `);
-      
+
       // ボタンクリックイベントを設定
       const generateButton = document.getElementById('genepass');
       generateButton.addEventListener('click', generatePassword);
@@ -289,7 +289,7 @@ describe('パスワード生成機能', () => {
     test('指定した長さのパスワードがHTMLに正しく表示される', () => {
       // 20文字のパスワード設定
       document.getElementById('passlen').value = '20';
-      
+
       const generateButton = document.getElementById('genepass');
       generateButton.click();
 
@@ -331,7 +331,7 @@ describe('パスワード生成機能', () => {
 
     test('テキストエリアにshowクラスが追加される', () => {
       const pasText = document.getElementById('pasText');
-      
+
       // 初期状態ではshowクラスがない
       expect(pasText.className).toBe('');
 
@@ -345,7 +345,7 @@ describe('パスワード生成機能', () => {
 
   describe('クリップボード連携', () => {
     let clipboardText = '';
-    
+
     beforeEach(() => {
       setupDOM();
       // navigator.clipboardをモック
@@ -358,7 +358,7 @@ describe('パスワード生成機能', () => {
         },
         writable: true,
       });
-      
+
       // DOM関数を再定義（テスト環境用）
       // biome-ignore lint/security/noGlobalEval: テスト環境でのDOM関数定義のため必要
       eval(`
@@ -411,7 +411,7 @@ describe('パスワード生成機能', () => {
           }
         }
       `);
-      
+
       // ボタンクリックイベントを設定
       const generateButton = document.getElementById('genepass');
       generateButton.addEventListener('click', generatePassword);
@@ -420,7 +420,7 @@ describe('パスワード生成機能', () => {
     test('生成されたパスワードがHTMLとクリップボードで一致する', async () => {
       // パスワード長を設定
       document.getElementById('passlen').value = '12';
-      
+
       // 全ての文字種を有効化
       document.getElementById('lower').checked = true;
       document.getElementById('upper').checked = true;
@@ -432,7 +432,7 @@ describe('パスワード生成機能', () => {
       generateButton.click();
 
       // 少し待機してPromiseを解決
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       // HTMLのテキストエリアから表示されているパスワードを取得
       const pasText = document.getElementById('pasText');
@@ -455,7 +455,7 @@ describe('パスワード生成機能', () => {
       const generateButton = document.getElementById('genepass');
       generateButton.click();
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const pasText = document.getElementById('pasText');
       const displayedPassword = pasText.value;
